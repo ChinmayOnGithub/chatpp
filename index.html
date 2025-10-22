@@ -14,11 +14,9 @@
     // For secure connection in production
     // const ws = new WebSocket(`wss://chat-backend.onrender.com`);
 
-
     const wsUrl = window.location.hostname === "localhost"
       ? "ws://localhost:8000"
-      : "wss://chat-backend.onrender.com";
-
+      : "wss://chat-backend.onrender.com"; // your Render backend URL
     const ws = new WebSocket(wsUrl);
 
 
