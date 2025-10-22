@@ -1,63 +1,13 @@
-<!DOCTYPE html>
-<html>
-
-<body>
-
-  <form id="chatForm">
-    <input id="msg" placeholder="Type message..." />
-    <button type="submit">Send</button>
-  </form>
-  <ul id="chat"></ul>
-
-  <script>
-    // const ws = new WebSocket(`ws://10.72.102.20:8000`);
-    // For secure connection in production
-    // const ws = new WebSocket(`wss://chat-backend.onrender.com`);
-
-    const wsUrl = window.location.hostname === "localhost"
-      ? "ws://localhost:8000"
-      : "wss://chat-app-2oso.onrender.com"; // your Render backend URL
-    const ws = new WebSocket(wsUrl);
-
-
-
-    ws.addEventListener('open', () => {
-      const username = prompt("Enter your chat name");
-      ws.send(JSON.stringify({ type: 'identify', username }));
-    });
-    const chat = document.getElementById('chat');
-    const msg = document.getElementById('msg');
-    const form = document.getElementById('chatForm');
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const li = document.createElement('li');
-
-      if (data.system) {
-        li.style.color = 'gray';
-        li.textContent = data.message;
-      } else {
-        li.textContent = `${data.username} : ${data.message}`;
-      }
-      chat.appendChild(li);
-    };
-
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (msg.value.trim()) {
-        ws.send(JSON.stringify({ type: 'message', text: msg.value }));
-        msg.value = '';
-      }
-    })
-
-    // function send() {
-    //   if (msg.value.trim()) {
-    //     ws.send(msg.value);
-    //     msg.value = '';
-    //   }
-    // }
-  </script>
-</body>
-
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chatpp</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
