@@ -10,6 +10,7 @@ function App() {
     type: "system" | "message";
     username?: string;
     message: string;
+    system?: boolean; // Add this
   }
 
   const msgRef = useRef<HTMLInputElement>(null);
@@ -53,6 +54,11 @@ function App() {
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        // Mark system messages explicitly
+        if (data.type === "system") data.system = true;
+        else data.system = false;
+
+
         setMessages(prev => [...prev, data]);
       } catch (e: unknown) {
         console.warn("Invalid JSON received:", event.data, e);
@@ -169,13 +175,12 @@ function App() {
           {messages.map((m, i) => (
             <li
               key={i}
-              className={`mb-2 p-2 rounded-md ${m.system
-                ? "bg-gray-200 text-gray-600"
-                : "bg-white border border-black text-black"
+              className={`mb-2 p-2 rounded-md ${m.type === "system" ? "bg-gray-200 text-gray-600" : "bg-white border border-black text-black"
                 }`}
             >
-              {m.system ? m.message : `${m.username}: ${m.message}`}
+              {m.type === "system" ? m.message : `${m.username}: ${m.message}`}
             </li>
+
           ))}
         </ul>
       </div>
