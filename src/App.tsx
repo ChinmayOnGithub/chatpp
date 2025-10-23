@@ -7,10 +7,9 @@ import Username from './components/Username.tsx';
 function App() {
 
   interface ChatMessage {
-    type: "system" | "message";
+    system: boolean;
     username?: string;
     message: string;
-    system?: boolean; // Add this
   }
 
   const msgRef = useRef<HTMLInputElement>(null);
@@ -54,10 +53,6 @@ function App() {
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        // Mark system messages explicitly
-        if (data.type === "system") data.system = true;
-        else data.system = false;
-
 
         setMessages(prev => [...prev, data]);
       } catch (e: unknown) {
@@ -105,10 +100,6 @@ function App() {
       wsRef.current?.close();
       wsRef.current = null;
     };
-    return () => {
-      // wsRef.current?.close();
-      // wsRef.current = null;
-    };
   }, [username]);
 
 
@@ -123,8 +114,11 @@ function App() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const text = msgRef.current?.value.trim();
+    if (!text) return;
+
     if (msgRef.current?.value.trim()) {
-      wsRef.current?.send(JSON.stringify({ type: 'message', text: msgRef.current.value }));
+      wsRef.current?.send(JSON.stringify({ type: 'message', text }));
       msgRef.current.value = "";
     }
   }
@@ -175,12 +169,13 @@ function App() {
           {messages.map((m, i) => (
             <li
               key={i}
-              className={`mb-2 p-2 rounded-md ${m.type === "system" ? "bg-gray-200 text-gray-600" : "bg-white border border-black text-black"
+              className={`mb-2 p-2 rounded-md ${m.system
+                ? "bg-gray-200 text-gray-600"
+                : "bg-white border border-black text-black"
                 }`}
             >
-              {m.type === "system" ? m.message : `${m.username}: ${m.message}`}
+              {m.system ? m.message : `${m.username}: ${m.message}`}
             </li>
-
           ))}
         </ul>
       </div>
@@ -190,4 +185,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
